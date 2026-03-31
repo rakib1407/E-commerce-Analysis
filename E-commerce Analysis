@@ -1,1 +1,891 @@
-{"metadata":{"kernelspec":{"language":"python","display_name":"Python 3","name":"python3"},"language_info":{"name":"python","version":"3.12.12","mimetype":"text/x-python","codemirror_mode":{"name":"ipython","version":3},"pygments_lexer":"ipython3","nbconvert_exporter":"python","file_extension":".py"},"kaggle":{"accelerator":"none","dataSources":[{"sourceType":"datasetVersion","sourceId":3404,"datasetId":1985,"databundleVersionId":3404}],"dockerImageVersionId":31328,"isInternetEnabled":true,"language":"python","sourceType":"notebook","isGpuEnabled":false}},"nbformat_minor":4,"nbformat":4,"cells":[{"cell_type":"code","source":"import numpy as np\nimport pandas as pd","metadata":{"_uuid":"8f2839f25d086af736a60e9eeb907d3b93b6e0e5","_cell_guid":"b1076dfc-b9ad-4769-8c92-a6c4dae69d19","trusted":true,"execution":{"iopub.status.busy":"2026-03-31T10:29:27.062295Z","iopub.execute_input":"2026-03-31T10:29:27.063612Z","iopub.status.idle":"2026-03-31T10:29:28.582522Z","shell.execute_reply.started":"2026-03-31T10:29:27.063580Z","shell.execute_reply":"2026-03-31T10:29:28.581520Z"}},"outputs":[],"execution_count":1},{"cell_type":"markdown","source":"**Load Data**","metadata":{}},{"cell_type":"code","source":"df=pd.read_csv(\"/kaggle/input/datasets/carrie1/ecommerce-data/data.csv\",encoding=\"latin1\")\n\nprint(df)","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2026-03-31T10:31:11.942369Z","iopub.execute_input":"2026-03-31T10:31:11.942670Z","iopub.status.idle":"2026-03-31T10:31:13.056483Z","shell.execute_reply.started":"2026-03-31T10:31:11.942645Z","shell.execute_reply":"2026-03-31T10:31:13.055499Z"}},"outputs":[{"name":"stdout","text":"       InvoiceNo StockCode                          Description  Quantity  \\\n0         536365    85123A   WHITE HANGING HEART T-LIGHT HOLDER         6   \n1         536365     71053                  WHITE METAL LANTERN         6   \n2         536365    84406B       CREAM CUPID HEARTS COAT HANGER         8   \n3         536365    84029G  KNITTED UNION FLAG HOT WATER BOTTLE         6   \n4         536365    84029E       RED WOOLLY HOTTIE WHITE HEART.         6   \n...          ...       ...                                  ...       ...   \n541904    581587     22613          PACK OF 20 SPACEBOY NAPKINS        12   \n541905    581587     22899         CHILDREN'S APRON DOLLY GIRL          6   \n541906    581587     23254        CHILDRENS CUTLERY DOLLY GIRL          4   \n541907    581587     23255      CHILDRENS CUTLERY CIRCUS PARADE         4   \n541908    581587     22138        BAKING SET 9 PIECE RETROSPOT          3   \n\n            InvoiceDate  UnitPrice  CustomerID         Country  \n0        12/1/2010 8:26       2.55     17850.0  United Kingdom  \n1        12/1/2010 8:26       3.39     17850.0  United Kingdom  \n2        12/1/2010 8:26       2.75     17850.0  United Kingdom  \n3        12/1/2010 8:26       3.39     17850.0  United Kingdom  \n4        12/1/2010 8:26       3.39     17850.0  United Kingdom  \n...                 ...        ...         ...             ...  \n541904  12/9/2011 12:50       0.85     12680.0          France  \n541905  12/9/2011 12:50       2.10     12680.0          France  \n541906  12/9/2011 12:50       4.15     12680.0          France  \n541907  12/9/2011 12:50       4.15     12680.0          France  \n541908  12/9/2011 12:50       4.95     12680.0          France  \n\n[541909 rows x 8 columns]\n","output_type":"stream"}],"execution_count":5},{"cell_type":"markdown","source":"**Missing value Check**","metadata":{}},{"cell_type":"code","source":"print(df.isnull())","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2026-03-31T10:33:37.256276Z","iopub.execute_input":"2026-03-31T10:33:37.256576Z","iopub.status.idle":"2026-03-31T10:33:37.361445Z","shell.execute_reply.started":"2026-03-31T10:33:37.256513Z","shell.execute_reply":"2026-03-31T10:33:37.360492Z"}},"outputs":[{"name":"stdout","text":"        InvoiceNo  StockCode  Description  Quantity  InvoiceDate  UnitPrice  \\\n0           False      False        False     False        False      False   \n1           False      False        False     False        False      False   \n2           False      False        False     False        False      False   \n3           False      False        False     False        False      False   \n4           False      False        False     False        False      False   \n...           ...        ...          ...       ...          ...        ...   \n541904      False      False        False     False        False      False   \n541905      False      False        False     False        False      False   \n541906      False      False        False     False        False      False   \n541907      False      False        False     False        False      False   \n541908      False      False        False     False        False      False   \n\n        CustomerID  Country  \n0            False    False  \n1            False    False  \n2            False    False  \n3            False    False  \n4            False    False  \n...            ...      ...  \n541904       False    False  \n541905       False    False  \n541906       False    False  \n541907       False    False  \n541908       False    False  \n\n[541909 rows x 8 columns]\n","output_type":"stream"}],"execution_count":6},{"cell_type":"code","source":"df.isnull().sum()","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2026-03-31T10:34:13.368857Z","iopub.execute_input":"2026-03-31T10:34:13.369172Z","iopub.status.idle":"2026-03-31T10:34:13.480140Z","shell.execute_reply.started":"2026-03-31T10:34:13.369149Z","shell.execute_reply":"2026-03-31T10:34:13.478907Z"}},"outputs":[{"execution_count":7,"output_type":"execute_result","data":{"text/plain":"InvoiceNo           0\nStockCode           0\nDescription      1454\nQuantity            0\nInvoiceDate         0\nUnitPrice           0\nCustomerID     135080\nCountry             0\ndtype: int64"},"metadata":{}}],"execution_count":7},{"cell_type":"markdown","source":"**Data Cleaning**","metadata":{}},{"cell_type":"code","source":"# missing value remove\ndf = df.dropna()\n\n# duplicate remove\ndf = df.drop_duplicates()\n\n# date convert\ndf['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2026-03-31T10:35:29.642966Z","iopub.execute_input":"2026-03-31T10:35:29.643272Z","iopub.status.idle":"2026-03-31T10:35:30.110563Z","shell.execute_reply.started":"2026-03-31T10:35:29.643243Z","shell.execute_reply":"2026-03-31T10:35:30.109493Z"}},"outputs":[],"execution_count":8},{"cell_type":"code","source":"df.isnull().sum()","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2026-03-31T10:35:44.608732Z","iopub.execute_input":"2026-03-31T10:35:44.608983Z","iopub.status.idle":"2026-03-31T10:35:44.677851Z","shell.execute_reply.started":"2026-03-31T10:35:44.608963Z","shell.execute_reply":"2026-03-31T10:35:44.677172Z"}},"outputs":[{"execution_count":9,"output_type":"execute_result","data":{"text/plain":"InvoiceNo      0\nStockCode      0\nDescription    0\nQuantity       0\nInvoiceDate    0\nUnitPrice      0\nCustomerID     0\nCountry        0\ndtype: int64"},"metadata":{}}],"execution_count":9},{"cell_type":"markdown","source":"**Total Revenue**","metadata":{}},{"cell_type":"code","source":"df['TotalPrice'] = np.multiply(df['Quantity'], df['UnitPrice'])\n\nprint(df)","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2026-03-31T10:39:20.365751Z","iopub.execute_input":"2026-03-31T10:39:20.366022Z","iopub.status.idle":"2026-03-31T10:39:20.375883Z","shell.execute_reply.started":"2026-03-31T10:39:20.366001Z","shell.execute_reply":"2026-03-31T10:39:20.374932Z"}},"outputs":[{"name":"stdout","text":"       InvoiceNo StockCode                          Description  Quantity  \\\n0         536365    85123A   WHITE HANGING HEART T-LIGHT HOLDER         6   \n1         536365     71053                  WHITE METAL LANTERN         6   \n2         536365    84406B       CREAM CUPID HEARTS COAT HANGER         8   \n3         536365    84029G  KNITTED UNION FLAG HOT WATER BOTTLE         6   \n4         536365    84029E       RED WOOLLY HOTTIE WHITE HEART.         6   \n...          ...       ...                                  ...       ...   \n541904    581587     22613          PACK OF 20 SPACEBOY NAPKINS        12   \n541905    581587     22899         CHILDREN'S APRON DOLLY GIRL          6   \n541906    581587     23254        CHILDRENS CUTLERY DOLLY GIRL          4   \n541907    581587     23255      CHILDRENS CUTLERY CIRCUS PARADE         4   \n541908    581587     22138        BAKING SET 9 PIECE RETROSPOT          3   \n\n               InvoiceDate  UnitPrice  CustomerID         Country  TotalPrice  \n0      2010-12-01 08:26:00       2.55     17850.0  United Kingdom       15.30  \n1      2010-12-01 08:26:00       3.39     17850.0  United Kingdom       20.34  \n2      2010-12-01 08:26:00       2.75     17850.0  United Kingdom       22.00  \n3      2010-12-01 08:26:00       3.39     17850.0  United Kingdom       20.34  \n4      2010-12-01 08:26:00       3.39     17850.0  United Kingdom       20.34  \n...                    ...        ...         ...             ...         ...  \n541904 2011-12-09 12:50:00       0.85     12680.0          France       10.20  \n541905 2011-12-09 12:50:00       2.10     12680.0          France       12.60  \n541906 2011-12-09 12:50:00       4.15     12680.0          France       16.60  \n541907 2011-12-09 12:50:00       4.15     12680.0          France       16.60  \n541908 2011-12-09 12:50:00       4.95     12680.0          France       14.85  \n\n[401604 rows x 9 columns]\n","output_type":"stream"}],"execution_count":14},{"cell_type":"markdown","source":"**TotalPrice**","metadata":{}},{"cell_type":"code","source":"total=df[\"TotalPrice\"].sum()\nprint(total)","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2026-03-31T10:41:13.441399Z","iopub.execute_input":"2026-03-31T10:41:13.441734Z","iopub.status.idle":"2026-03-31T10:41:13.447480Z","shell.execute_reply.started":"2026-03-31T10:41:13.441707Z","shell.execute_reply":"2026-03-31T10:41:13.446607Z"}},"outputs":[{"name":"stdout","text":"8278519.4240000015\n","output_type":"stream"}],"execution_count":16},{"cell_type":"markdown","source":"**Monthly Sales**","metadata":{}},{"cell_type":"code","source":"df['Month'] = df['InvoiceDate'].dt.month\n\nmonthly_sales = df.groupby('Month')['TotalPrice'].sum().reset_index()\n\nprint(\"Monthly Sales:\")\nprint(monthly_sales.sort_values(by='TotalPrice', ascending=False))","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2026-03-31T10:42:25.401324Z","iopub.execute_input":"2026-03-31T10:42:25.401697Z","iopub.status.idle":"2026-03-31T10:42:25.437317Z","shell.execute_reply.started":"2026-03-31T10:42:25.401639Z","shell.execute_reply":"2026-03-31T10:42:25.436620Z"}},"outputs":[{"name":"stdout","text":"Monthly Sales:\n    Month   TotalPrice\n10     11  1126815.070\n9      10   973306.380\n8       9   929356.232\n11     12   893912.290\n4       5   647011.670\n7       8   615078.090\n5       6   606862.520\n2       3   578576.210\n6       7   573112.321\n0       1   473731.900\n1       2   435534.070\n3       4   425222.671\n","output_type":"stream"}],"execution_count":17},{"cell_type":"markdown","source":"**Top Products**","metadata":{}},{"cell_type":"code","source":"top_products = df.groupby('Description')['TotalPrice'].sum().reset_index()\n\ntop_products = top_products.sort_values(by='TotalPrice', ascending=False)\n\nprint(\"Top Products:\")\nprint(top_products.head(10))","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2026-03-31T10:44:17.736341Z","iopub.execute_input":"2026-03-31T10:44:17.736652Z","iopub.status.idle":"2026-03-31T10:44:17.787268Z","shell.execute_reply.started":"2026-03-31T10:44:17.736620Z","shell.execute_reply":"2026-03-31T10:44:17.786627Z"}},"outputs":[{"name":"stdout","text":"Top Products:\n                             Description  TotalPrice\n2780            REGENCY CAKESTAND 3 TIER   132567.70\n3716  WHITE HANGING HEART T-LIGHT HOLDER    93767.80\n1771             JUMBO BAG RED RETROSPOT    83056.52\n2355                       PARTY BUNTING    67628.43\n2624                             POSTAGE    66710.24\n217        ASSORTED COLOUR BIRD ORNAMENT    56331.91\n2669                  RABBIT NIGHT LIGHT    51042.84\n725                        CHILLI LIGHTS    45915.41\n2323     PAPER CHAIN KIT 50'S CHRISTMAS     41423.78\n2405      PICNIC BASKET WICKER 60 PIECES    39619.50\n","output_type":"stream"}],"execution_count":18},{"cell_type":"markdown","source":"**Top Customers**","metadata":{}},{"cell_type":"code","source":"top_customers = df.groupby('CustomerID')['TotalPrice'].sum().reset_index()\n\ntop_customers = top_customers.sort_values(by='TotalPrice', ascending=False)\n\nprint(\"Top Customers:\")\nprint(top_customers.head(10))","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2026-03-31T10:57:53.020746Z","iopub.execute_input":"2026-03-31T10:57:53.021105Z","iopub.status.idle":"2026-03-31T10:57:53.042001Z","shell.execute_reply.started":"2026-03-31T10:57:53.021079Z","shell.execute_reply":"2026-03-31T10:57:53.041132Z"}},"outputs":[{"name":"stdout","text":"Top Customers:\n      CustomerID  TotalPrice\n1703     14646.0   279489.02\n4233     18102.0   256438.49\n3758     17450.0   187322.17\n1895     14911.0   132458.73\n55       12415.0   123725.45\n1345     14156.0   113214.59\n3801     17511.0    88125.38\n3202     16684.0    65892.08\n1005     13694.0    62690.54\n2192     15311.0    59284.19\n","output_type":"stream"}],"execution_count":19},{"cell_type":"markdown","source":"**Country Analysis**","metadata":{}},{"cell_type":"code","source":"country_sales = df.groupby('Country')['TotalPrice'].sum().reset_index()\n\ncountry_sales = country_sales.sort_values(by='TotalPrice', ascending=False)\n\nprint(\"Top Countries:\")\nprint(country_sales.head(10))","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2026-03-31T10:58:17.274269Z","iopub.execute_input":"2026-03-31T10:58:17.274582Z","iopub.status.idle":"2026-03-31T10:58:17.307238Z","shell.execute_reply.started":"2026-03-31T10:58:17.274556Z","shell.execute_reply":"2026-03-31T10:58:17.306608Z"}},"outputs":[{"name":"stdout","text":"Top Countries:\n           Country   TotalPrice\n35  United Kingdom  6747156.154\n23     Netherlands   284661.540\n10            EIRE   250001.780\n14         Germany   221509.470\n13          France   196626.050\n0        Australia   137009.770\n32     Switzerland    55739.400\n30           Spain    54756.030\n3          Belgium    40910.960\n31          Sweden    36585.410\n","output_type":"stream"}],"execution_count":20},{"cell_type":"markdown","source":"**Repeat Customers**","metadata":{}},{"cell_type":"code","source":"repeat_customers = df.groupby('CustomerID')['InvoiceNo'].nunique()\n\nrepeat_customers = repeat_customers[repeat_customers > 1]\n\nprint(\"Repeat Customers Count:\", repeat_customers.count())","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2026-03-31T10:59:18.447888Z","iopub.execute_input":"2026-03-31T10:59:18.448167Z","iopub.status.idle":"2026-03-31T10:59:18.487080Z","shell.execute_reply.started":"2026-03-31T10:59:18.448144Z","shell.execute_reply":"2026-03-31T10:59:18.486075Z"}},"outputs":[{"name":"stdout","text":"Repeat Customers Count: 3059\n","output_type":"stream"}],"execution_count":21},{"cell_type":"markdown","source":"**order value**","metadata":{}},{"cell_type":"code","source":"print(\" Order Value:\")\nprint(df.describe())","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2026-03-31T11:35:54.488364Z","iopub.execute_input":"2026-03-31T11:35:54.488699Z","iopub.status.idle":"2026-03-31T11:35:54.554552Z","shell.execute_reply.started":"2026-03-31T11:35:54.488672Z","shell.execute_reply":"2026-03-31T11:35:54.553878Z"}},"outputs":[{"name":"stdout","text":" Order Value:\n            Quantity                    InvoiceDate      UnitPrice  \\\ncount  392692.000000                         392692  392692.000000   \nmean       13.119702  2011-07-10 19:13:07.771892480       3.125914   \nmin         1.000000            2010-12-01 08:26:00       0.001000   \n25%         2.000000            2011-04-07 11:12:00       1.250000   \n50%         6.000000            2011-07-31 12:02:00       1.950000   \n75%        12.000000            2011-10-20 12:53:00       3.750000   \nmax     80995.000000            2011-12-09 12:50:00    8142.750000   \nstd       180.492832                            NaN      22.241836   \n\n          CustomerID     TotalPrice          Month  \ncount  392692.000000  392692.000000  392692.000000  \nmean    15287.843865      22.631500       7.601871  \nmin     12346.000000       0.001000       1.000000  \n25%     13955.000000       4.950000       5.000000  \n50%     15150.000000      12.450000       8.000000  \n75%     16791.000000      19.800000      11.000000  \nmax     18287.000000  168469.600000      12.000000  \nstd      1713.539549     311.099224       3.415015  \n","output_type":"stream"}],"execution_count":29}]}
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "e59ae7ce",
+   "metadata": {
+    "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
+    "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
+    "execution": {
+     "iopub.execute_input": "2026-03-31T11:36:30.178354Z",
+     "iopub.status.busy": "2026-03-31T11:36:30.177975Z",
+     "iopub.status.idle": "2026-03-31T11:36:31.203404Z",
+     "shell.execute_reply": "2026-03-31T11:36:31.202498Z"
+    },
+    "papermill": {
+     "duration": 1.033902,
+     "end_time": "2026-03-31T11:36:31.205606+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:30.171704+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b66e817d",
+   "metadata": {
+    "papermill": {
+     "duration": 0.004112,
+     "end_time": "2026-03-31T11:36:31.213825+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:31.209713+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "**Load Data**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "b8c611ec",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-31T11:36:31.223742Z",
+     "iopub.status.busy": "2026-03-31T11:36:31.222723Z",
+     "iopub.status.idle": "2026-03-31T11:36:32.624196Z",
+     "shell.execute_reply": "2026-03-31T11:36:32.623404Z"
+    },
+    "papermill": {
+     "duration": 1.408851,
+     "end_time": "2026-03-31T11:36:32.626557+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:31.217706+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "       InvoiceNo StockCode                          Description  Quantity  \\\n",
+      "0         536365    85123A   WHITE HANGING HEART T-LIGHT HOLDER         6   \n",
+      "1         536365     71053                  WHITE METAL LANTERN         6   \n",
+      "2         536365    84406B       CREAM CUPID HEARTS COAT HANGER         8   \n",
+      "3         536365    84029G  KNITTED UNION FLAG HOT WATER BOTTLE         6   \n",
+      "4         536365    84029E       RED WOOLLY HOTTIE WHITE HEART.         6   \n",
+      "...          ...       ...                                  ...       ...   \n",
+      "541904    581587     22613          PACK OF 20 SPACEBOY NAPKINS        12   \n",
+      "541905    581587     22899         CHILDREN'S APRON DOLLY GIRL          6   \n",
+      "541906    581587     23254        CHILDRENS CUTLERY DOLLY GIRL          4   \n",
+      "541907    581587     23255      CHILDRENS CUTLERY CIRCUS PARADE         4   \n",
+      "541908    581587     22138        BAKING SET 9 PIECE RETROSPOT          3   \n",
+      "\n",
+      "            InvoiceDate  UnitPrice  CustomerID         Country  \n",
+      "0        12/1/2010 8:26       2.55     17850.0  United Kingdom  \n",
+      "1        12/1/2010 8:26       3.39     17850.0  United Kingdom  \n",
+      "2        12/1/2010 8:26       2.75     17850.0  United Kingdom  \n",
+      "3        12/1/2010 8:26       3.39     17850.0  United Kingdom  \n",
+      "4        12/1/2010 8:26       3.39     17850.0  United Kingdom  \n",
+      "...                 ...        ...         ...             ...  \n",
+      "541904  12/9/2011 12:50       0.85     12680.0          France  \n",
+      "541905  12/9/2011 12:50       2.10     12680.0          France  \n",
+      "541906  12/9/2011 12:50       4.15     12680.0          France  \n",
+      "541907  12/9/2011 12:50       4.15     12680.0          France  \n",
+      "541908  12/9/2011 12:50       4.95     12680.0          France  \n",
+      "\n",
+      "[541909 rows x 8 columns]\n"
+     ]
+    }
+   ],
+   "source": [
+    "df=pd.read_csv(\"/kaggle/input/datasets/carrie1/ecommerce-data/data.csv\",encoding=\"latin1\")\n",
+    "\n",
+    "print(df)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "41cb9786",
+   "metadata": {
+    "papermill": {
+     "duration": 0.003488,
+     "end_time": "2026-03-31T11:36:32.633807+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:32.630319+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "**Missing value Check**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "0a3e1583",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-31T11:36:32.642912Z",
+     "iopub.status.busy": "2026-03-31T11:36:32.642135Z",
+     "iopub.status.idle": "2026-03-31T11:36:32.787663Z",
+     "shell.execute_reply": "2026-03-31T11:36:32.786402Z"
+    },
+    "papermill": {
+     "duration": 0.152307,
+     "end_time": "2026-03-31T11:36:32.789688+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:32.637381+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "        InvoiceNo  StockCode  Description  Quantity  InvoiceDate  UnitPrice  \\\n",
+      "0           False      False        False     False        False      False   \n",
+      "1           False      False        False     False        False      False   \n",
+      "2           False      False        False     False        False      False   \n",
+      "3           False      False        False     False        False      False   \n",
+      "4           False      False        False     False        False      False   \n",
+      "...           ...        ...          ...       ...          ...        ...   \n",
+      "541904      False      False        False     False        False      False   \n",
+      "541905      False      False        False     False        False      False   \n",
+      "541906      False      False        False     False        False      False   \n",
+      "541907      False      False        False     False        False      False   \n",
+      "541908      False      False        False     False        False      False   \n",
+      "\n",
+      "        CustomerID  Country  \n",
+      "0            False    False  \n",
+      "1            False    False  \n",
+      "2            False    False  \n",
+      "3            False    False  \n",
+      "4            False    False  \n",
+      "...            ...      ...  \n",
+      "541904       False    False  \n",
+      "541905       False    False  \n",
+      "541906       False    False  \n",
+      "541907       False    False  \n",
+      "541908       False    False  \n",
+      "\n",
+      "[541909 rows x 8 columns]\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(df.isnull())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "767544dd",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-31T11:36:32.800191Z",
+     "iopub.status.busy": "2026-03-31T11:36:32.798908Z",
+     "iopub.status.idle": "2026-03-31T11:36:32.950480Z",
+     "shell.execute_reply": "2026-03-31T11:36:32.949561Z"
+    },
+    "papermill": {
+     "duration": 0.158809,
+     "end_time": "2026-03-31T11:36:32.952443+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:32.793634+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "InvoiceNo           0\n",
+       "StockCode           0\n",
+       "Description      1454\n",
+       "Quantity            0\n",
+       "InvoiceDate         0\n",
+       "UnitPrice           0\n",
+       "CustomerID     135080\n",
+       "Country             0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "24aa0acc",
+   "metadata": {
+    "papermill": {
+     "duration": 0.003823,
+     "end_time": "2026-03-31T11:36:32.960403+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:32.956580+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "**Data Cleaning**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "f26b91f8",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-31T11:36:32.970061Z",
+     "iopub.status.busy": "2026-03-31T11:36:32.969728Z",
+     "iopub.status.idle": "2026-03-31T11:36:33.531668Z",
+     "shell.execute_reply": "2026-03-31T11:36:33.530891Z"
+    },
+    "papermill": {
+     "duration": 0.569351,
+     "end_time": "2026-03-31T11:36:33.533727+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:32.964376+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# missing value remove\n",
+    "df = df.dropna()\n",
+    "\n",
+    "# duplicate remove\n",
+    "df = df.drop_duplicates()\n",
+    "\n",
+    "# date convert\n",
+    "df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "17e86a73",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-31T11:36:33.544125Z",
+     "iopub.status.busy": "2026-03-31T11:36:33.543226Z",
+     "iopub.status.idle": "2026-03-31T11:36:33.632745Z",
+     "shell.execute_reply": "2026-03-31T11:36:33.631817Z"
+    },
+    "papermill": {
+     "duration": 0.096876,
+     "end_time": "2026-03-31T11:36:33.634613+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.537737+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "InvoiceNo      0\n",
+       "StockCode      0\n",
+       "Description    0\n",
+       "Quantity       0\n",
+       "InvoiceDate    0\n",
+       "UnitPrice      0\n",
+       "CustomerID     0\n",
+       "Country        0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "855f0958",
+   "metadata": {
+    "papermill": {
+     "duration": 0.003777,
+     "end_time": "2026-03-31T11:36:33.642454+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.638677+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "**Total Revenue**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "8c1277e5",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-31T11:36:33.653435Z",
+     "iopub.status.busy": "2026-03-31T11:36:33.652482Z",
+     "iopub.status.idle": "2026-03-31T11:36:33.666885Z",
+     "shell.execute_reply": "2026-03-31T11:36:33.665811Z"
+    },
+    "papermill": {
+     "duration": 0.021788,
+     "end_time": "2026-03-31T11:36:33.668977+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.647189+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "       InvoiceNo StockCode                          Description  Quantity  \\\n",
+      "0         536365    85123A   WHITE HANGING HEART T-LIGHT HOLDER         6   \n",
+      "1         536365     71053                  WHITE METAL LANTERN         6   \n",
+      "2         536365    84406B       CREAM CUPID HEARTS COAT HANGER         8   \n",
+      "3         536365    84029G  KNITTED UNION FLAG HOT WATER BOTTLE         6   \n",
+      "4         536365    84029E       RED WOOLLY HOTTIE WHITE HEART.         6   \n",
+      "...          ...       ...                                  ...       ...   \n",
+      "541904    581587     22613          PACK OF 20 SPACEBOY NAPKINS        12   \n",
+      "541905    581587     22899         CHILDREN'S APRON DOLLY GIRL          6   \n",
+      "541906    581587     23254        CHILDRENS CUTLERY DOLLY GIRL          4   \n",
+      "541907    581587     23255      CHILDRENS CUTLERY CIRCUS PARADE         4   \n",
+      "541908    581587     22138        BAKING SET 9 PIECE RETROSPOT          3   \n",
+      "\n",
+      "               InvoiceDate  UnitPrice  CustomerID         Country  TotalPrice  \n",
+      "0      2010-12-01 08:26:00       2.55     17850.0  United Kingdom       15.30  \n",
+      "1      2010-12-01 08:26:00       3.39     17850.0  United Kingdom       20.34  \n",
+      "2      2010-12-01 08:26:00       2.75     17850.0  United Kingdom       22.00  \n",
+      "3      2010-12-01 08:26:00       3.39     17850.0  United Kingdom       20.34  \n",
+      "4      2010-12-01 08:26:00       3.39     17850.0  United Kingdom       20.34  \n",
+      "...                    ...        ...         ...             ...         ...  \n",
+      "541904 2011-12-09 12:50:00       0.85     12680.0          France       10.20  \n",
+      "541905 2011-12-09 12:50:00       2.10     12680.0          France       12.60  \n",
+      "541906 2011-12-09 12:50:00       4.15     12680.0          France       16.60  \n",
+      "541907 2011-12-09 12:50:00       4.15     12680.0          France       16.60  \n",
+      "541908 2011-12-09 12:50:00       4.95     12680.0          France       14.85  \n",
+      "\n",
+      "[401604 rows x 9 columns]\n"
+     ]
+    }
+   ],
+   "source": [
+    "df['TotalPrice'] = np.multiply(df['Quantity'], df['UnitPrice'])\n",
+    "\n",
+    "print(df)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "da5078f0",
+   "metadata": {
+    "papermill": {
+     "duration": 0.003845,
+     "end_time": "2026-03-31T11:36:33.677035+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.673190+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "**TotalPrice**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "904aafcd",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-31T11:36:33.687346Z",
+     "iopub.status.busy": "2026-03-31T11:36:33.686651Z",
+     "iopub.status.idle": "2026-03-31T11:36:33.693012Z",
+     "shell.execute_reply": "2026-03-31T11:36:33.692075Z"
+    },
+    "papermill": {
+     "duration": 0.013959,
+     "end_time": "2026-03-31T11:36:33.694854+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.680895+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "8278519.4240000015\n"
+     ]
+    }
+   ],
+   "source": [
+    "total=df[\"TotalPrice\"].sum()\n",
+    "print(total)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "36ab0e6d",
+   "metadata": {
+    "papermill": {
+     "duration": 0.00384,
+     "end_time": "2026-03-31T11:36:33.702777+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.698937+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "**Monthly Sales**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "f641e807",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-31T11:36:33.712386Z",
+     "iopub.status.busy": "2026-03-31T11:36:33.712032Z",
+     "iopub.status.idle": "2026-03-31T11:36:33.748658Z",
+     "shell.execute_reply": "2026-03-31T11:36:33.747867Z"
+    },
+    "papermill": {
+     "duration": 0.043984,
+     "end_time": "2026-03-31T11:36:33.750711+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.706727+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Monthly Sales:\n",
+      "    Month   TotalPrice\n",
+      "10     11  1126815.070\n",
+      "9      10   973306.380\n",
+      "8       9   929356.232\n",
+      "11     12   893912.290\n",
+      "4       5   647011.670\n",
+      "7       8   615078.090\n",
+      "5       6   606862.520\n",
+      "2       3   578576.210\n",
+      "6       7   573112.321\n",
+      "0       1   473731.900\n",
+      "1       2   435534.070\n",
+      "3       4   425222.671\n"
+     ]
+    }
+   ],
+   "source": [
+    "df['Month'] = df['InvoiceDate'].dt.month\n",
+    "\n",
+    "monthly_sales = df.groupby('Month')['TotalPrice'].sum().reset_index()\n",
+    "\n",
+    "print(\"Monthly Sales:\")\n",
+    "print(monthly_sales.sort_values(by='TotalPrice', ascending=False))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "28fafb3d",
+   "metadata": {
+    "papermill": {
+     "duration": 0.004138,
+     "end_time": "2026-03-31T11:36:33.759518+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.755380+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "**Top Products**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "83e21b05",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-31T11:36:33.769910Z",
+     "iopub.status.busy": "2026-03-31T11:36:33.769127Z",
+     "iopub.status.idle": "2026-03-31T11:36:33.825365Z",
+     "shell.execute_reply": "2026-03-31T11:36:33.824113Z"
+    },
+    "papermill": {
+     "duration": 0.063655,
+     "end_time": "2026-03-31T11:36:33.827386+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.763731+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Top Products:\n",
+      "                             Description  TotalPrice\n",
+      "2780            REGENCY CAKESTAND 3 TIER   132567.70\n",
+      "3716  WHITE HANGING HEART T-LIGHT HOLDER    93767.80\n",
+      "1771             JUMBO BAG RED RETROSPOT    83056.52\n",
+      "2355                       PARTY BUNTING    67628.43\n",
+      "2624                             POSTAGE    66710.24\n",
+      "217        ASSORTED COLOUR BIRD ORNAMENT    56331.91\n",
+      "2669                  RABBIT NIGHT LIGHT    51042.84\n",
+      "725                        CHILLI LIGHTS    45915.41\n",
+      "2323     PAPER CHAIN KIT 50'S CHRISTMAS     41423.78\n",
+      "2405      PICNIC BASKET WICKER 60 PIECES    39619.50\n"
+     ]
+    }
+   ],
+   "source": [
+    "top_products = df.groupby('Description')['TotalPrice'].sum().reset_index()\n",
+    "\n",
+    "top_products = top_products.sort_values(by='TotalPrice', ascending=False)\n",
+    "\n",
+    "print(\"Top Products:\")\n",
+    "print(top_products.head(10))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0156e7ab",
+   "metadata": {
+    "papermill": {
+     "duration": 0.004457,
+     "end_time": "2026-03-31T11:36:33.836117+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.831660+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "**Top Customers**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "3f1f2608",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-31T11:36:33.846996Z",
+     "iopub.status.busy": "2026-03-31T11:36:33.846059Z",
+     "iopub.status.idle": "2026-03-31T11:36:33.869000Z",
+     "shell.execute_reply": "2026-03-31T11:36:33.867295Z"
+    },
+    "papermill": {
+     "duration": 0.030658,
+     "end_time": "2026-03-31T11:36:33.871025+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.840367+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Top Customers:\n",
+      "      CustomerID  TotalPrice\n",
+      "1703     14646.0   279489.02\n",
+      "4233     18102.0   256438.49\n",
+      "3758     17450.0   187322.17\n",
+      "1895     14911.0   132458.73\n",
+      "55       12415.0   123725.45\n",
+      "1345     14156.0   113214.59\n",
+      "3801     17511.0    88125.38\n",
+      "3202     16684.0    65892.08\n",
+      "1005     13694.0    62690.54\n",
+      "2192     15311.0    59284.19\n"
+     ]
+    }
+   ],
+   "source": [
+    "top_customers = df.groupby('CustomerID')['TotalPrice'].sum().reset_index()\n",
+    "\n",
+    "top_customers = top_customers.sort_values(by='TotalPrice', ascending=False)\n",
+    "\n",
+    "print(\"Top Customers:\")\n",
+    "print(top_customers.head(10))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1f65b789",
+   "metadata": {
+    "papermill": {
+     "duration": 0.004096,
+     "end_time": "2026-03-31T11:36:33.879611+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.875515+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "**Country Analysis**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "f0e9e8d9",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-31T11:36:33.890579Z",
+     "iopub.status.busy": "2026-03-31T11:36:33.889589Z",
+     "iopub.status.idle": "2026-03-31T11:36:33.929427Z",
+     "shell.execute_reply": "2026-03-31T11:36:33.928289Z"
+    },
+    "papermill": {
+     "duration": 0.047697,
+     "end_time": "2026-03-31T11:36:33.931643+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.883946+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Top Countries:\n",
+      "           Country   TotalPrice\n",
+      "35  United Kingdom  6747156.154\n",
+      "23     Netherlands   284661.540\n",
+      "10            EIRE   250001.780\n",
+      "14         Germany   221509.470\n",
+      "13          France   196626.050\n",
+      "0        Australia   137009.770\n",
+      "32     Switzerland    55739.400\n",
+      "30           Spain    54756.030\n",
+      "3          Belgium    40910.960\n",
+      "31          Sweden    36585.410\n"
+     ]
+    }
+   ],
+   "source": [
+    "country_sales = df.groupby('Country')['TotalPrice'].sum().reset_index()\n",
+    "\n",
+    "country_sales = country_sales.sort_values(by='TotalPrice', ascending=False)\n",
+    "\n",
+    "print(\"Top Countries:\")\n",
+    "print(country_sales.head(10))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d8103061",
+   "metadata": {
+    "papermill": {
+     "duration": 0.004165,
+     "end_time": "2026-03-31T11:36:33.940181+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.936016+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "**Repeat Customers**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "c31b1e1a",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-31T11:36:33.950470Z",
+     "iopub.status.busy": "2026-03-31T11:36:33.950076Z",
+     "iopub.status.idle": "2026-03-31T11:36:33.994624Z",
+     "shell.execute_reply": "2026-03-31T11:36:33.993909Z"
+    },
+    "papermill": {
+     "duration": 0.052359,
+     "end_time": "2026-03-31T11:36:33.996803+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:33.944444+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Repeat Customers Count: 3059\n"
+     ]
+    }
+   ],
+   "source": [
+    "repeat_customers = df.groupby('CustomerID')['InvoiceNo'].nunique()\n",
+    "\n",
+    "repeat_customers = repeat_customers[repeat_customers > 1]\n",
+    "\n",
+    "print(\"Repeat Customers Count:\", repeat_customers.count())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e9c27b55",
+   "metadata": {
+    "papermill": {
+     "duration": 0.004101,
+     "end_time": "2026-03-31T11:36:34.005214+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:34.001113+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "**order value**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "4889101f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-31T11:36:34.015682Z",
+     "iopub.status.busy": "2026-03-31T11:36:34.015044Z",
+     "iopub.status.idle": "2026-03-31T11:36:34.103676Z",
+     "shell.execute_reply": "2026-03-31T11:36:34.102529Z"
+    },
+    "papermill": {
+     "duration": 0.096176,
+     "end_time": "2026-03-31T11:36:34.105702+00:00",
+     "exception": false,
+     "start_time": "2026-03-31T11:36:34.009526+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      " Order Value:\n",
+      "            Quantity                    InvoiceDate      UnitPrice  \\\n",
+      "count  401604.000000                         401604  401604.000000   \n",
+      "mean       12.183273  2011-07-10 12:08:23.848567552       3.474064   \n",
+      "min    -80995.000000            2010-12-01 08:26:00       0.000000   \n",
+      "25%         2.000000            2011-04-06 15:02:00       1.250000   \n",
+      "50%         5.000000            2011-07-29 15:40:00       1.950000   \n",
+      "75%        12.000000            2011-10-20 11:58:30       3.750000   \n",
+      "max     80995.000000            2011-12-09 12:50:00   38970.000000   \n",
+      "std       250.283037                            NaN      69.764035   \n",
+      "\n",
+      "          CustomerID     TotalPrice          Month  \n",
+      "count  401604.000000  401604.000000  401604.000000  \n",
+      "mean    15281.160818      20.613638       7.595407  \n",
+      "min     12346.000000 -168469.600000       1.000000  \n",
+      "25%     13939.000000       4.250000       5.000000  \n",
+      "50%     15145.000000      11.700000       8.000000  \n",
+      "75%     16784.000000      19.800000      11.000000  \n",
+      "max     18287.000000  168469.600000      12.000000  \n",
+      "std      1714.006089     430.352218       3.417451  \n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\" Order Value:\")\n",
+    "print(df.describe())"
+   ]
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "none",
+   "dataSources": [
+    {
+     "databundleVersionId": 3404,
+     "datasetId": 1985,
+     "sourceId": 3404,
+     "sourceType": "datasetVersion"
+    }
+   ],
+   "dockerImageVersionId": 31328,
+   "isGpuEnabled": false,
+   "isInternetEnabled": true,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 7.623008,
+   "end_time": "2026-03-31T11:36:34.631687+00:00",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2026-03-31T11:36:27.008679+00:00",
+   "version": "2.7.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
